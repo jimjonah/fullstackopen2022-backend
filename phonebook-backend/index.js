@@ -25,6 +25,13 @@ let persons = [
   }
 ]
 
+app.get('/info', (request, response) => {
+  let infoStr = `Phonebook has info for ${persons.length} people`;
+  response.send(`<p>${infoStr}</p>
+                <p>${new Date()}</p>`
+  )
+})
+
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
