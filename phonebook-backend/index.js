@@ -72,9 +72,23 @@ function generateId() {
 app.post('/api/persons', (request, response) => {
   const body = request.body
  console.log(body)
-  if (!body.name) {
+  if (!body.name ) {
     return response.status(400).json({
-      error: 'content missing'
+      error: 'name is missing'
+    })
+  }
+
+  if (!body.number) {
+    return response.status(400).json({
+      error: 'number is missing'
+    })
+  }
+
+  let duplicates = persons.filter(person => person.name === body.name)
+  if(duplicates.length > 0){
+    console.log(duplicates)
+    return response.status(400).json({
+      error: 'name must be unique'
     })
   }
 
