@@ -1,0 +1,26 @@
+{
+  "name": "phonebook-backend",
+  "version": "1.0.0",
+  "description": "part of the fullstackopen2022 class - author jim jonah",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jimjonah/fullstackopen2022-backend.git"
+  },
+  "author": "jim jonah",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jimjonah/fullstackopen2022-backend/issues"
+  },
+  "homepage": "https://github.com/jimjonah/fullstackopen2022-backend#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
