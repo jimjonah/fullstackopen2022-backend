@@ -2,6 +2,10 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 
+var morgan = require('morgan')
+
+app.use(morgan('tiny'))
+
 let persons = [
   {
     "id": 1,
@@ -42,10 +46,10 @@ app.get('/api/persons', (request, response) => {
 
 app.get('/api/persons/:id', (request, response) => {
   const id = request.params.id
-  console.log(id)
+  // console.log(id)
   const person = persons.find(person => {
     const id = Number(request.params.id)
-    console.log(person.id, typeof person.id, id, typeof id, person.id === id)
+    // console.log(person.id, typeof person.id, id, typeof id, person.id === id)
     return person.id === id
   })
   console.log(person)
@@ -58,8 +62,9 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
+  const id = request.params.id
+  //since the id can be a number or a string use the truthy equals to match either
+  persons = persons.filter(person => person.id != id)
 
   response.status(204).end()
 })
@@ -86,7 +91,7 @@ app.post('/api/persons', (request, response) => {
 
   let duplicates = persons.filter(person => person.name === body.name)
   if(duplicates.length > 0){
-    console.log(duplicates)
+    // console.log(duplicates)
     return response.status(400).json({
       error: 'name must be unique'
     })
@@ -102,6 +107,8 @@ app.post('/api/persons', (request, response) => {
   response.json(persons)
 })
 
+
+/*       the actual server           */
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
