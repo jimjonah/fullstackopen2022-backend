@@ -4,7 +4,18 @@ app.use(express.json())
 
 var morgan = require('morgan')
 
-app.use(morgan('tiny'))
+morgan.token('body-content', function (req, res) { return JSON.stringify(req.body)})
+
+app.use(morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms',
+    tokens['body-content'](req,res),
+  ].join(' ')
+}))
 
 let persons = [
   {
@@ -45,7 +56,7 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = request.params.id
+  // const id = request.params.id
   // console.log(id)
   const person = persons.find(person => {
     const id = Number(request.params.id)
