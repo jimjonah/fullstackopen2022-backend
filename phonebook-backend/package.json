@@ -1,7 +1,7 @@
 {
   "name": "phonebook-backend",
   "version": "1.0.0",
-  "description": "part of the fullstackopen2022 class - author jim jonah",
+  "description": "part of the fullstackopen2022 class - author Jim Jonah",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
