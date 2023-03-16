@@ -1,13 +1,15 @@
-const express = require('express')
-const app = express()
-app.use(express.json())
+require('dotenv').config();
+const express = require('express');
+const app = express();
+app.use(express.json());
+const Person = require('./models/phonebook');
 
-const cors = require('cors')
-app.use(cors())
+const cors = require('cors');
+app.use(cors());
 
-var morgan = require('morgan')
+var morgan = require('morgan');
 
-morgan.token('body-content', function (req, res) { return JSON.stringify(req.body)})
+morgan.token('body-content', function (req, res) { return JSON.stringify(req.body)});
 
 app.use(morgan(function (tokens, req, res) {
   return [
@@ -55,24 +57,29 @@ app.get('/info', (request, response) => {
 // })
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+  // response.json(persons)
+  Person.find({}).then(persons => {
+    response.json(persons)
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  // const id = request.params.id
-  // console.log(id)
-  const person = persons.find(person => {
-    const id = Number(request.params.id)
-    // console.log(person.id, typeof person.id, id, typeof id, person.id === id)
-    return person.id === id
-  })
-  console.log(person)
-  if (person) {
+  // const person = persons.find(person => {
+  //   const id = Number(request.params.id)
+  //   // console.log(person.id, typeof person.id, id, typeof id, person.id === id)
+  //   return person.id === id
+  // })
+  // console.log(person)
+  // if (person) {
+  //   response.json(person)
+  // } else {
+  //   response.statusMessage = "Person not found";
+  //   response.status(404).end()
+  // }
+
+  Person.findById({_id:request.params.id}).then(person => {
     response.json(person)
-  } else {
-    response.statusMessage = "Person not found";
-    response.status(404).end()
-  }
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -111,11 +118,11 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  const person = {
+  const person =  Person({
     name: body.name,
     number: body.number,
     id: generateId(),
-  }
+  });
 
   persons = persons.concat(person)
   response.json(persons)
