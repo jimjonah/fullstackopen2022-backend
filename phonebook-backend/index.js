@@ -109,28 +109,38 @@ app.post('/api/persons', (request, response, next) => {
         id: generateId(),
       });
 
-      // persons = persons.concat(person)
-      // response.json(persons)
-      person.save().then(savedPerson => {
-        response.json(savedPerson);
-      })
-      .catch(error => next(error));
+      let error = person.validateSync();
+      if(typeof error !== 'undefined'){
+        console.log('error is', error);
+        next(error)
+      } else {
+        person.save().then(savedPerson => {
+          response.json(savedPerson);
+        })
+        .catch(error => next(error));
+      }
     } else {
       // we found a person so do a PUT instead
       console.log('found a person so updating', person[0]);
-      const newPerson = {
+      const newPerson = new Person({
         name: body.name,
         number: body.number,
         id: person[0].id
-      }
-
-      Person.findByIdAndUpdate(person[0]._id,
-          newPerson,
-          {new: true, runValidators: true, context: 'query'})
-      .then(updatedPerson => {
-        response.json(updatedPerson);
       })
-      .catch(error => next(error));
+
+      let error = newPerson.validateSync();
+      if(typeof error !== 'undefined'){
+        console.log('error is', error);
+        next(error)
+      } else {
+        Person.findByIdAndUpdate(person[0]._id,
+            newPerson,
+            {new: true, runValidators: true, context: 'query'})
+        .then(updatedPerson => {
+          response.json(updatedPerson);
+        })
+        .catch(error => next(error));
+      }
     }
   });
 });
