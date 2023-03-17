@@ -3,3 +3,5 @@
 /notes-backend/node_modules/
 /notes-backend/.env
 /phonebook-backend/.env
+/phonebook-backend/.dockerignore
+/notes-backend/.dockerignore

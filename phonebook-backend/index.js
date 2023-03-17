@@ -59,46 +59,23 @@ app.get('/info', (request, response) => {
 // })
 
 app.get('/api/persons', (request, response) => {
-  // response.json(persons)
   Person.find({}).then(persons => {
     response.json(persons);
   });
 });
 
 app.get('/api/persons/:id', (request, response) => {
-  // const person = persons.find(person => {
-  //   const id = Number(request.params.id)
-  //   // console.log(person.id, typeof person.id, id, typeof id, person.id === id)
-  //   return person.id === id
-  // })
-  // console.log(person)
-  // if (person) {
-  //   response.json(person)
-  // } else {
-  //   response.statusMessage = "Person not found";
-  //   response.status(404).end()
-  // }
-
   Person.findById({_id: request.params.id}).then(person => {
     response.json(person);
   });
 });
 
-app.delete('/api/persons/:id', (request, response) => {
-  // const id = request.params.id;
-  // //since the id can be a number or a string use the truthy equals to match either
-  // persons = persons.filter(person => person.id != id);
-  //
-  // response.status(204).end();
-
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
   .then(result => {
     response.status(204).end();
   })
-  .catch(error => {
-    console.log(error);
-    response.status(500).send();
-  })
+  .catch(error => next(error))
 });
 
 function generateId() {
@@ -141,7 +118,7 @@ app.post('/api/persons', (request, response) => {
   });
 });
 
-/*   middleware    */
+/********************************************************   middleware    */
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method);
   console.log('Path:  ', request.path);
@@ -160,7 +137,18 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint);
 
-/* end middleware   */
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  }
+  next(error);
+}
+
+// this has to be the last loaded middleware.
+app.use(errorHandler)
+
+/********************************************************** end middleware   */
 
 /*       the actual server           */
 const PORT = process.env.PORT || 3001;
