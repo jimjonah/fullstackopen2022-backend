@@ -113,7 +113,8 @@ app.post('/api/persons', (request, response, next) => {
       // response.json(persons)
       person.save().then(savedPerson => {
         response.json(savedPerson);
-      });
+      })
+      .catch(error => next(error));
     } else {
       // we found a person so do a PUT instead
       console.log('found a person so updating', person[0]);
@@ -123,13 +124,14 @@ app.post('/api/persons', (request, response, next) => {
         id: person[0].id
       }
 
-      Person.findByIdAndUpdate(person[0]._id, newPerson, { new: true })
+      Person.findByIdAndUpdate(person[0]._id,
+          newPerson,
+          {new: true, runValidators: true, context: 'query'})
       .then(updatedPerson => {
         response.json(updatedPerson);
       })
       .catch(error => next(error));
     }
-
   });
 });
 
@@ -172,7 +174,9 @@ app.put('/api/persons/:id', (request, response, next) => {
         id: person[0].id
       }
 
-      Person.findByIdAndUpdate(person[0]._id, newPerson, { new: true })
+      Person.findByIdAndUpdate(person[0]._id,
+          newPerson,
+          {new: true, runValidators: true, context: 'query'})
       .then(updatedPerson => {
         response.json(updatedPerson);
       })
@@ -205,6 +209,8 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message);
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
   next(error);
 }
