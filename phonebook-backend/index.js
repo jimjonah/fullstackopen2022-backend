@@ -82,7 +82,7 @@ function generateId() {
   return Math.floor(Math.random() * Date.now()).toString(16);
 }
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body;
   console.log(body);
   if (!body.name) {
@@ -97,24 +97,85 @@ app.post('/api/persons', (request, response) => {
     });
   }
 
-  // let duplicates = persons.filter(person => person.name === body.name);
-  // if (duplicates.length > 0) {
-  //   // console.log(duplicates)
-  //   return response.status(400).json({
-  //     error: 'name must be unique'
-  //   });
-  // }
+  Person.find({name: body.name}).then(person => {
+    if( person.length === 0){
+      console.log('didn\'t find a person so adding');
+      const person = new Person({
+        name: body.name,
+        number: body.number,
+        id: generateId(),
+      });
 
-  const person = new Person({
-    name: body.name,
-    number: body.number,
-    id: generateId(),
+      // persons = persons.concat(person)
+      // response.json(persons)
+      person.save().then(savedPerson => {
+        response.json(savedPerson);
+      });
+    } else {
+      // we found a person so do a PUT instead
+      console.log('found a person so updating', person[0]);
+      const newPerson = {
+        name: body.name,
+        number: body.number,
+        id: person[0].id
+      }
+
+      Person.findByIdAndUpdate(person[0]._id, newPerson, { new: true })
+      .then(updatedPerson => {
+        response.json(updatedPerson);
+      })
+      .catch(error => next(error));
+    }
+
   });
+});
 
-  // persons = persons.concat(person)
-  // response.json(persons)
-  person.save().then(savedPerson => {
-    response.json(savedPerson);
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body;
+  console.log(body);
+  if (!body.name) {
+    return response.status(400).json({
+      error: 'name is missing'
+    });
+  }
+
+  if (!body.number) {
+    return response.status(400).json({
+      error: 'number is missing'
+    });
+  }
+
+  Person.find({name: body.name}).then(person => {
+    if( person.length === 0){
+      console.log('didn\'t find a person so adding');
+      const person = new Person({
+        name: body.name,
+        number: body.number,
+        id: generateId(),
+      });
+
+      // persons = persons.concat(person)
+      // response.json(persons)
+      person.save().then(savedPerson => {
+        response.json(savedPerson);
+      });
+    } else {
+      // we found a person so do a PUT instead
+      console.log('found a person so updating', person[0]);
+      const newPerson = {
+        name: body.name,
+        number: body.number,
+        id: person[0].id
+      }
+
+      Person.findByIdAndUpdate(person[0]._id, newPerson, { new: true })
+      .then(updatedPerson => {
+        response.json(updatedPerson);
+      })
+      .catch(error => next(error));
+    }
+
   });
 });
 
