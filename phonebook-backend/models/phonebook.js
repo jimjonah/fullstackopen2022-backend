@@ -7,12 +7,12 @@ console.log('connecting to', url);
 console.log('using port', process.env.PORT);
 
 mongoose.connect(url)
-.then(result => {
-  console.log('connected to MongoDB')
-})
-.catch((error) => {
-  console.log('error connecting to MongoDB:', error.message)
-})
+  .then(() => {
+    console.log('connected to MongoDB');
+  })
+  .catch((error) => {
+    console.log('error connecting to MongoDB:', error.message);
+  });
 
 
 const phonebookSchema = new mongoose.Schema({
@@ -36,9 +36,9 @@ const phonebookSchema = new mongoose.Schema({
 });
 phonebookSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
   }
 });
 

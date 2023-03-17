@@ -9,7 +9,7 @@ app.use(cors());
 
 var morgan = require('morgan');
 
-morgan.token('body-content', function (req, res) {
+morgan.token('body-content', function (req) {
   return JSON.stringify(req.body);
 });
 
@@ -49,10 +49,10 @@ app.use(morgan(function (tokens, req, res) {
 
 app.get('/info', (request, response) => {
   Person.countDocuments({}).then(count => {
-        let infoStr = `Phonebook has info for ${count} people`;
-        response.send(`<p>${infoStr}</p>
-                    <p>${new Date()}</p>`);
-      }
+    let infoStr = `Phonebook has info for ${count} people`;
+    response.send(`<p>${infoStr}</p>
+                <p>${new Date()}</p>`);
+  }
   );
 });
 
@@ -67,18 +67,18 @@ app.get('/api/persons', (request, response) => {
 });
 
 app.get('/api/persons/:id', (request, response, next) => {
-  Person.findById({_id: request.params.id}).then(person => {
+  Person.findById({ _id: request.params.id }).then(person => {
     response.json(person);
   })
-  .catch(error => next(error))
+    .catch(error => next(error));
 });
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-  .then(result => {
-    response.status(204).end();
-  })
-  .catch(error => next(error))
+    .then(() => {
+      response.status(204).end();
+    })
+    .catch(error => next(error));
 });
 
 function generateId() {
@@ -100,8 +100,8 @@ app.post('/api/persons', (request, response, next) => {
     });
   }
 
-  Person.find({name: body.name}).then(person => {
-    if( person.length === 0){
+  Person.find({ name: body.name }).then(person => {
+    if (person.length === 0) {
       console.log('didn\'t find a person so adding');
       const person = new Person({
         name: body.name,
@@ -110,14 +110,14 @@ app.post('/api/persons', (request, response, next) => {
       });
 
       let error = person.validateSync();
-      if(typeof error !== 'undefined'){
+      if (typeof error !== 'undefined') {
         console.log('error is', error);
-        next(error)
+        next(error);
       } else {
         person.save().then(savedPerson => {
           response.json(savedPerson);
         })
-        .catch(error => next(error));
+          .catch(error => next(error));
       }
     } else {
       // we found a person so do a PUT instead
@@ -126,25 +126,24 @@ app.post('/api/persons', (request, response, next) => {
         name: body.name,
         number: body.number,
         id: person[0].id
-      })
+      });
 
       let error = newPerson.validateSync();
-      if(typeof error !== 'undefined'){
+      if (typeof error !== 'undefined') {
         console.log('error is', error);
-        next(error)
+        next(error);
       } else {
         Person.findByIdAndUpdate(person[0]._id,
-            newPerson,
-            {new: true, runValidators: true, context: 'query'})
-        .then(updatedPerson => {
-          response.json(updatedPerson);
-        })
-        .catch(error => next(error));
+          newPerson,
+          { new: true, runValidators: true, context: 'query' })
+          .then(updatedPerson => {
+            response.json(updatedPerson);
+          })
+          .catch(error => next(error));
       }
     }
   });
 });
-
 
 app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body;
@@ -161,8 +160,8 @@ app.put('/api/persons/:id', (request, response, next) => {
     });
   }
 
-  Person.find({name: body.name}).then(person => {
-    if( person.length === 0){
+  Person.find({ name: body.name }).then(person => {
+    if (person.length === 0) {
       console.log('didn\'t find a person so adding');
       const person = new Person({
         name: body.name,
@@ -182,15 +181,15 @@ app.put('/api/persons/:id', (request, response, next) => {
         name: body.name,
         number: body.number,
         id: person[0].id
-      }
+      };
 
       Person.findByIdAndUpdate(person[0]._id,
-          newPerson,
-          {new: true, runValidators: true, context: 'query'})
-      .then(updatedPerson => {
-        response.json(updatedPerson);
-      })
-      .catch(error => next(error));
+        newPerson,
+        { new: true, runValidators: true, context: 'query' })
+        .then(updatedPerson => {
+          response.json(updatedPerson);
+        })
+        .catch(error => next(error));
     }
 
   });
@@ -210,7 +209,7 @@ app.use(requestLogger);
 app.use(express.static('build'));
 
 const unknownEndpoint = (request, response) => {
-  response.status(404).send({error: 'unknown endpoint'});
+  response.status(404).send({ error: 'unknown endpoint' });
 };
 
 app.use(unknownEndpoint);
@@ -220,13 +219,13 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' });
   } else if (error.name === 'ValidationError') {
-    return response.status(400).json({ error: error.message })
+    return response.status(400).json({ error: error.message });
   }
   next(error);
-}
+};
 
 // this has to be the last loaded middleware.
-app.use(errorHandler)
+app.use(errorHandler);
 
 /********************************************************** end middleware   */
 
