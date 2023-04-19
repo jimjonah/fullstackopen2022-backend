@@ -85,14 +85,14 @@ describe('most popular blog post', () => {
       title: 'Typescript Rocks',
       author: 'Robert C. Martin',
       url: 'http://www.example.com',
-      likes: 6,
+      likes: 4,
       __v: 0
     }, {
       _id: '5a422aa71b54a676234d17f7',
       title: 'PL/I Rocks',
       author: 'Robert C. Martin',
       url: 'http://www.example.com',
-      likes: 6,
+      likes: 3,
       __v: 0
     }
   ]
@@ -114,6 +114,16 @@ describe('most popular blog post', () => {
         {
           author: "Robert C. Martin",
           blogs: 3
+        }
+    )
+  })
+
+  test('return author with most likes', () => {
+    const result = listHelper.mostLikes(listOfBlogs)
+    expect(result).toStrictEqual(
+        {
+          author: "Edsger W. Dijkstra",
+          likes: 17
         }
     )
   })
