@@ -73,6 +73,27 @@ describe('most popular blog post', () => {
       url: 'http://www.example.com',
       likes: 6,
       __v: 0
+    }, {
+      _id: '5a422aa71b54a676234d17f7',
+      title: 'Javascript Rocks',
+      author: 'Robert C. Martin',
+      url: 'http://www.example.com',
+      likes: 6,
+      __v: 0
+    },  {
+      _id: '5a422aa71b54a676234d17f7',
+      title: 'Typescript Rocks',
+      author: 'Robert C. Martin',
+      url: 'http://www.example.com',
+      likes: 6,
+      __v: 0
+    }, {
+      _id: '5a422aa71b54a676234d17f7',
+      title: 'PL/I Rocks',
+      author: 'Robert C. Martin',
+      url: 'http://www.example.com',
+      likes: 6,
+      __v: 0
     }
   ]
 
@@ -83,6 +104,16 @@ describe('most popular blog post', () => {
           title: "Canonical string reduction",
           author: "Edsger W. Dijkstra",
           likes: 12
+        }
+    )
+  })
+
+  test('return author with most blogs', () => {
+    const result = listHelper.mostBlogs(listOfBlogs)
+    expect(result).toStrictEqual(
+        {
+          author: "Robert C. Martin",
+          blogs: 3
         }
     )
   })
