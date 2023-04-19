@@ -5,3 +5,6 @@
 /phonebook-backend/.env
 /phonebook-backend/.dockerignore
 /notes-backend/.dockerignore
+/bloglist/.env
+/.project
+/apicalls.rest
